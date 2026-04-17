@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <td><span class="badge ${sevClass}">${alerta.severidad}</span></td>
             <td><span class="badge rounded-pill ${statClass}">${alerta.estado}</span></td>
             <td>
-                <button class="btn btn-sm btn-outline-primary">Gestionar</button>
+                <button class="btn btn-sm btn-outline-primary btn-gestionar">Gestionar</button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const textSLA = document.getElementById('resultadoSLA');
     const btnGuardarAlerta = document.getElementById('btnGuardarAlerta');
 
-    // Mostrar el SLA correspondiente al seleccionar la severidad manualmente [cite: 10]
+    // Mostrar el SLA correspondiente al seleccionar la severidad manualmente
     if (selectSeveridad) {
         selectSeveridad.addEventListener('change', (e) => {
             const severidad = e.target.value;
@@ -100,16 +100,16 @@ document.addEventListener("DOMContentLoaded", () => {
             let colorClase = "text-muted";
 
             if (severidad === "Crítica") {
-                sla = "< 1 hora [cite: 10]";
+                sla = "< 1 hora";
                 colorClase = "text-danger";
             } else if (severidad === "Alta") {
-                sla = "< 4 horas [cite: 10]";
+                sla = "< 4 horas";
                 colorClase = "text-warning"; 
             } else if (severidad === "Media") {
-                sla = "< 24 horas [cite: 10]";
+                sla = "< 24 horas";
                 colorClase = "text-primary";
             } else if (severidad === "Baja") {
-                sla = "< 72 horas [cite: 10]";
+                sla = "< 72 horas";
                 colorClase = "text-secondary";
             }
 
@@ -128,7 +128,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
             
-            // Aquí en un futuro enviarías los datos por fetch/AJAX a tu backend Node.js
             alert(`¡Alerta registrada con éxito en el sistema!\n\nSeveridad seleccionada: ${severidadFinal}\nTiempo de respuesta SLA: ${textSLA.innerText}`);
             
             // Cerrar el modal y reiniciar el formulario
@@ -139,6 +138,72 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById('formNuevaAlerta').reset();
             textSLA.innerText = "Pendiente";
             textSLA.className = "text-danger fw-bold";
+        });
+    }
+
+    // ==========================================
+    // 5. LÓGICA DEL MODAL DE GESTIÓN (Evidencias y Estado)
+    // ==========================================
+
+    // Escuchar clics en los botones "Gestionar" de la tabla
+    tbody.addEventListener('click', (e) => {
+        if (e.target.classList.contains('btn-gestionar')) {
+            const fila = e.target.closest('tr');
+            
+            // Extraer datos de la fila
+            const idAlerta = fila.cells[0].innerText;
+            const tipo = fila.cells[1].innerText;
+            const activo = fila.cells[2].innerText;
+            const severidad = fila.cells[3].innerText;
+            const estadoActual = fila.cells[4].innerText; 
+
+            // Pasar datos al Modal
+            document.getElementById('gestionarIdAlerta').innerText = idAlerta;
+            document.getElementById('gestionarTipo').innerText = tipo;
+            document.getElementById('gestionarActivo').innerText = activo;
+            
+            const badgeSev = document.getElementById('gestionarSeveridad');
+            badgeSev.innerText = severidad;
+            badgeSev.className = fila.cells[3].querySelector('.badge').className;
+
+            // Seleccionar el estado correcto en el dropdown
+            const selectEstado = document.getElementById('gestionarEstado');
+            for (let option of selectEstado.options) {
+                if (option.value === estadoActual) {
+                    option.selected = true;
+                    break;
+                }
+            }
+
+            // Mostrar Modal
+            const modalGestionElement = document.getElementById('modalGestionarAlerta');
+            const modalGestion = bootstrap.Modal.getInstance(modalGestionElement) || new bootstrap.Modal(modalGestionElement);
+            modalGestion.show();
+        }
+    });
+
+    // Simular el guardado de la gestión de alerta
+    const btnActualizarAlerta = document.getElementById('btnActualizarAlerta');
+    if (btnActualizarAlerta) {
+        btnActualizarAlerta.addEventListener('click', () => {
+            const idAlerta = document.getElementById('gestionarIdAlerta').innerText;
+            const archivos = document.getElementById('gestionarEvidencias').files.length;
+            const nuevoEstado = document.getElementById('gestionarEstado').value;
+            
+            let mensaje = `¡Alerta ${idAlerta} actualizada a estado: ${nuevoEstado}!`;
+            if (archivos > 0) {
+                mensaje += `\nSe han adjuntado ${archivos} archivo(s) de evidencia.`;
+            }
+
+            alert(mensaje);
+            
+            // Cerrar el modal
+            const modalElement = document.getElementById('modalGestionarAlerta');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            modalInstance.hide();
+            
+            // Limpiar formulario
+            document.getElementById('formGestionarAlerta').reset();
         });
     }
 
