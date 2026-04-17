@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2. GRÁFICOS (Chart.js)
     // ==========================================
     
-    // Gráfico: Tipos de Amenaza (Dona)
     const ctxThreat = document.getElementById('threatTypeChart').getContext('2d');
     new Chart(ctxThreat, {
         type: 'doughnut',
@@ -32,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Gráfico: Activos Afectados (Barras)
     const ctxAssets = document.getElementById('assetsChart').getContext('2d');
     new Chart(ctxAssets, {
         type: 'bar',
@@ -41,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
             datasets: [{
                 label: 'Número de Alertas',
                 data: [8, 15, 6, 4, 2, 3, 5],
-                backgroundColor: '#7c1225' // Color institucional
+                backgroundColor: '#7c1225'
             }]
         },
         options: {
@@ -63,7 +61,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const tbody = document.getElementById("alertsTableBody");
     
     alertasMock.forEach(alerta => {
-        // Asignar clases CSS según severidad y estado
         let sevClass = alerta.severidad === "Crítica" ? "badge-critica" : 
                        alerta.severidad === "Alta" ? "badge-alta" : 
                        alerta.severidad === "Media" ? "badge-media" : "badge-baja";
@@ -85,14 +82,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // ==========================================
-    // 4. LÓGICA DEL MODAL DE REGISTRO MANUAL (PGAC)
+    // 4. LÓGICA DEL MODAL DE REGISTRO MANUAL
     // ==========================================
     
     const selectSeveridad = document.getElementById('alertaSeveridad');
     const textSLA = document.getElementById('resultadoSLA');
     const btnGuardarAlerta = document.getElementById('btnGuardarAlerta');
 
-    // Mostrar el SLA correspondiente al seleccionar la severidad manualmente
     if (selectSeveridad) {
         selectSeveridad.addEventListener('change', (e) => {
             const severidad = e.target.value;
@@ -100,17 +96,13 @@ document.addEventListener("DOMContentLoaded", () => {
             let colorClase = "text-muted";
 
             if (severidad === "Crítica") {
-                sla = "< 1 hora";
-                colorClase = "text-danger";
+                sla = "< 1 hora"; colorClase = "text-danger";
             } else if (severidad === "Alta") {
-                sla = "< 4 horas";
-                colorClase = "text-warning"; 
+                sla = "< 4 horas"; colorClase = "text-warning"; 
             } else if (severidad === "Media") {
-                sla = "< 24 horas";
-                colorClase = "text-primary";
+                sla = "< 24 horas"; colorClase = "text-primary";
             } else if (severidad === "Baja") {
-                sla = "< 72 horas";
-                colorClase = "text-secondary";
+                sla = "< 72 horas"; colorClase = "text-secondary";
             }
 
             textSLA.innerText = sla;
@@ -118,19 +110,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Simular el guardado de la nueva alerta
     if (btnGuardarAlerta) {
         btnGuardarAlerta.addEventListener('click', () => {
             const severidadFinal = selectSeveridad.value;
-            
             if (!severidadFinal) {
                 alert("Por favor, seleccione el Nivel de Severidad de la alerta.");
                 return;
             }
-            
             alert(`¡Alerta registrada con éxito en el sistema!\n\nSeveridad seleccionada: ${severidadFinal}\nTiempo de respuesta SLA: ${textSLA.innerText}`);
             
-            // Cerrar el modal y reiniciar el formulario
             const modalElement = document.getElementById('modalRegistroAlerta');
             const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
             modalInstance.hide();
@@ -142,22 +130,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ==========================================
-    // 5. LÓGICA DEL MODAL DE GESTIÓN (Evidencias y Estado)
+    // 5. LÓGICA DEL MODAL DE GESTIÓN (Evidencias y Estado de SLA)
     // ==========================================
 
-    // Escuchar clics en los botones "Gestionar" de la tabla
     tbody.addEventListener('click', (e) => {
         if (e.target.classList.contains('btn-gestionar')) {
             const fila = e.target.closest('tr');
             
-            // Extraer datos de la fila
             const idAlerta = fila.cells[0].innerText;
             const tipo = fila.cells[1].innerText;
             const activo = fila.cells[2].innerText;
             const severidad = fila.cells[3].innerText;
             const estadoActual = fila.cells[4].innerText; 
 
-            // Pasar datos al Modal
             document.getElementById('gestionarIdAlerta').innerText = idAlerta;
             document.getElementById('gestionarTipo').innerText = tipo;
             document.getElementById('gestionarActivo').innerText = activo;
@@ -166,24 +151,19 @@ document.addEventListener("DOMContentLoaded", () => {
             badgeSev.innerText = severidad;
             badgeSev.className = fila.cells[3].querySelector('.badge').className;
 
-            // Seleccionar el estado correcto en el dropdown
             const selectEstado = document.getElementById('gestionarEstado');
             for (let option of selectEstado.options) {
                 if (option.value === estadoActual) {
-                    option.selected = true;
-                    break;
+                    option.selected = true; break;
                 }
             }
 
-            // Mostrar Modal
             const modalGestionElement = document.getElementById('modalGestionarAlerta');
             const modalGestion = bootstrap.Modal.getInstance(modalGestionElement) || new bootstrap.Modal(modalGestionElement);
             modalGestion.show();
         }
     });
 
-    // Simular el guardado de la gestión de alerta
-    // Simular el guardado de la gestión de alerta
     const btnActualizarAlerta = document.getElementById('btnActualizarAlerta');
     if (btnActualizarAlerta) {
         btnActualizarAlerta.addEventListener('click', () => {
@@ -191,13 +171,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const archivos = document.getElementById('gestionarEvidencias').files.length;
             const nuevoEstado = document.getElementById('gestionarEstado').value;
             
-            // 1. Mensaje de confirmación
             let mensaje = `¡Alerta ${idAlerta} actualizada a estado: ${nuevoEstado}!`;
-            if (archivos > 0) {
-                mensaje += `\nSe han adjuntado ${archivos} archivo(s) de evidencia.`;
-            }
+            if (archivos > 0) { mensaje += `\nSe han adjuntado ${archivos} archivo(s) de evidencia.`; }
             
-            // Lógica de Negocio (SLA)
+            // Lógica de Congelamiento de Reloj (SLA)
             if (nuevoEstado === "Cierre") {
                 mensaje += `\n\n✅ RELOJ DETENIDO: El incidente ha sido cerrado exitosamente. El MTTR ha sido calculado.`;
             } else {
@@ -206,80 +183,66 @@ document.addEventListener("DOMContentLoaded", () => {
 
             alert(mensaje);
             
-            // 2. Cerrar el modal
             const modalElement = document.getElementById('modalGestionarAlerta');
             const modalInstance = bootstrap.Modal.getInstance(modalElement);
             modalInstance.hide();
             
-            // 3. ACTUALIZAR LA TABLA VISUALMENTE
-            // Buscamos la fila en la tabla que tenga este ID para actualizarla en vivo
+            // Actualizar la fila en la tabla visualmente
             const filas = document.querySelectorAll('#alertsTableBody tr');
             filas.forEach(fila => {
                 if (fila.cells[0].innerText === idAlerta) {
-                    // Actualizamos el texto del badge de estado
                     const badgeEstado = fila.cells[4].querySelector('.badge');
                     badgeEstado.innerText = nuevoEstado;
                     
-                    // Si es cierre, lo pintamos de gris o éxito para indicar que terminó
                     if (nuevoEstado === "Cierre") {
                         badgeEstado.className = "badge rounded-pill bg-secondary text-white";
-                        // Deshabilitamos el botón de gestionar porque ya se cerró
                         const btn = fila.cells[5].querySelector('button');
                         btn.innerText = "Finalizado";
                         btn.className = "btn btn-sm btn-outline-secondary disabled";
                         btn.disabled = true;
                     } else {
-                        // Si es otro estado activo, mantenemos los colores de alerta
                         badgeEstado.className = "badge rounded-pill status-contencion";
                     }
                 }
             });
 
-            // Limpiar formulario
             document.getElementById('formGestionarAlerta').reset();
         });
     }
 
-// ==========================================
+    // ==========================================
     // 6. LÓGICA DEL PANEL DE RECORDATORIOS (Campanita)
     // ==========================================
 
     const modalRecordatoriosElement = document.getElementById('modalRecordatorios');
     
-    // Escuchar clics dentro del modal de recordatorios
     if (modalRecordatoriosElement) {
         modalRecordatoriosElement.addEventListener('click', (e) => {
             
-            // Acción 1: Clic en "Atender ahora"
-            if (e.target.classList.contains('btn-outline-danger') || e.target.classList.contains('btn-outline-warning')) {
-                // Encontrar el elemento contenedor más cercano para sacar el ID
+            // Clic en "Atender ahora"
+            if (e.target.classList.contains('btn-atender-ahora')) {
                 const itemLista = e.target.closest('.list-group-item');
-                // Sacar el ID de la etiqueta <h6> (ej. "CVE-2026-001")
                 const idAlerta = itemLista.querySelector('h6').innerText.split(' ')[0]; 
 
-                // 1. Ocultar el modal de recordatorios
                 const modalRecordatorios = bootstrap.Modal.getInstance(modalRecordatoriosElement);
                 modalRecordatorios.hide();
 
-                // 2. Inyectar el ID en el modal de Gestión para simular que entramos a esa alerta
+                // Precargar datos en el Modal de Gestión
                 document.getElementById('gestionarIdAlerta').innerText = idAlerta;
-                // Nota: En un sistema real aquí harías una consulta para traer los detalles de esa alerta
-                document.getElementById('gestionarTipo').innerText = "Recuperado del sistema";
-                document.getElementById('gestionarSeveridad').innerText = "En revisión";
+                document.getElementById('gestionarTipo').innerText = "Recuperado de Notificación";
+                document.getElementById('gestionarActivo').innerText = "Varios";
+                document.getElementById('gestionarSeveridad').innerText = "En Revisión";
                 document.getElementById('gestionarSeveridad').className = "badge bg-secondary";
 
-                // 3. Abrir el modal de Gestión de Evidencias
                 const modalGestion = new bootstrap.Modal(document.getElementById('modalGestionarAlerta'));
                 modalGestion.show();
             }
 
-            // Acción 2: Clic en "Configurar Correos"
-            if (e.target.closest('.btn-outline-secondary') && e.target.innerText.includes('Configurar Correos')) {
-                // Ocultar recordatorios
+            // Clic en "Configurar Correos"
+            if (e.target.classList.contains('btn-config-correos') || e.target.closest('.btn-config-correos')) {
                 const modalRecordatorios = bootstrap.Modal.getInstance(modalRecordatoriosElement);
                 modalRecordatorios.hide();
 
-                // Abrir modal de configuración
                 const modalCorreos = new bootstrap.Modal(document.getElementById('modalConfigurarCorreos'));
                 modalCorreos.show();
             }
@@ -297,7 +260,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             alert(`Configuración guardada.\nLas notificaciones automáticas se enviarán a:\n${correos}`);
             
-            // Cerrar el modal actual y regresar a los recordatorios
             const modalCorreos = bootstrap.Modal.getInstance(document.getElementById('modalConfigurarCorreos'));
             modalCorreos.hide();
             
@@ -305,3 +267,5 @@ document.addEventListener("DOMContentLoaded", () => {
             modalRecordatorios.show();
         });
     }
+
+});
