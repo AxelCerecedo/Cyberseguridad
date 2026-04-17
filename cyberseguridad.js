@@ -17,10 +17,10 @@ document.addEventListener("DOMContentLoaded", () => {
     new Chart(ctxThreat, {
         type: 'doughnut',
         data: {
-            labels: ['Malware', 'Phishing', 'Intrusión', 'Vulnerabilidad'],
+            labels: ['Malware', 'Phishing', 'Intrusión', 'Fuga de información', 'Vulnerabilidad'],
             datasets: [{
-                data: [12, 19, 3, 5],
-                backgroundColor: ['#dc3545', '#ffc107', '#0d6efd', '#6c757d']
+                data: [12, 19, 3, 2, 5],
+                backgroundColor: ['#dc3545', '#fd7e14', '#0d6efd', '#6f42c1', '#6c757d']
             }]
         },
         options: {
@@ -37,11 +37,11 @@ document.addEventListener("DOMContentLoaded", () => {
     new Chart(ctxAssets, {
         type: 'bar',
         data: {
-            labels: ['Servidor Web', 'Endpoint Usuario', 'Firewall', 'BD Main'],
+            labels: ['Servidor', 'Endpoint', 'Aplicación', 'Red', 'Librerías', 'Módulos', 'Servicios'],
             datasets: [{
                 label: 'Número de Alertas',
-                data: [8, 15, 4, 2],
-                backgroundColor: '#9f2241' // Tu color institucional
+                data: [8, 15, 6, 4, 2, 3, 5],
+                backgroundColor: '#7c1225' // Color institucional
             }]
         },
         options: {
@@ -55,9 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // 3. POBLAR TABLA DE ALERTAS (Mock Data)
     // ==========================================
     const alertasMock = [
-        { id: "CVE-2026-001", tipo: "Malware", activo: "Servidor Web", severidad: "Crítica", estado: "Contención" },
-        { id: "ALERTA-042", tipo: "Phishing", activo: "Endpoint (User12)", severidad: "Media", estado: "Análisis" },
-        { id: "CVE-2026-089", tipo: "Intrusión", activo: "Firewall", severidad: "Alta", estado: "Contención" }
+        { id: "CVE-2026-001", tipo: "Malware", activo: "Servidor", severidad: "Crítica", estado: "Contención" },
+        { id: "ALERTA-042", tipo: "Phishing", activo: "Endpoint", severidad: "Media", estado: "Análisis" },
+        { id: "CVE-2026-089", tipo: "Intrusión", activo: "Red", severidad: "Alta", estado: "Contención" }
     ];
 
     const tbody = document.getElementById("alertsTableBody");
@@ -65,7 +65,8 @@ document.addEventListener("DOMContentLoaded", () => {
     alertasMock.forEach(alerta => {
         // Asignar clases CSS según severidad y estado
         let sevClass = alerta.severidad === "Crítica" ? "badge-critica" : 
-                       alerta.severidad === "Alta" ? "badge-alta" : "badge-media";
+                       alerta.severidad === "Alta" ? "badge-alta" : 
+                       alerta.severidad === "Media" ? "badge-media" : "badge-baja";
                        
         let statClass = alerta.estado === "Contención" ? "status-contencion" : "status-analisis";
 
@@ -93,39 +94,48 @@ document.addEventListener("DOMContentLoaded", () => {
     const textSLA = document.getElementById('resultadoSLA');
     const btnGuardarAlerta = document.getElementById('btnGuardarAlerta');
 
-    // Función para calcular la matriz de severidad [cite: 27, 28]
+    // Función para calcular la matriz de severidad
     function calcularSeveridad() {
         const impacto = selectImpacto.value;
         const probabilidad = selectProbabilidad.value;
 
-        if (!impacto || !probabilidad) return;
+        if (!impacto || !probabilidad) {
+            badgeSeveridad.className = "badge bg-secondary fs-6";
+            badgeSeveridad.innerText = "Pendiente";
+            textSLA.innerText = "Seleccione Impacto y Probabilidad para calcular.";
+            return;
+        }
 
-        let severidad = "Pendiente";
+        let severidad = "No Definida en Matriz";
         let claseSLA = "bg-secondary";
-        let tiempoSLA = "";
+        let tiempoSLA = "Revisar criterios de clasificación.";
 
-        // Matriz basada en el PGAC [cite: 28]
+        // Matriz basada estrictamente en el PGAC
         if (impacto === "Alto" && probabilidad === "Alta") {
             severidad = "Crítica";
             claseSLA = "bg-danger";
-            tiempoSLA = "SLA: < 1 hora (Impacto grave, interrupción total) [cite: 10]";
-        } else if (impacto === "Alto" && probabilidad === "Media") {
+            tiempoSLA = "SLA: < 1 hora (Impacto grave, interrupción total)";
+        } 
+        else if (impacto === "Alto" && probabilidad === "Media") {
             severidad = "Alta";
-            claseSLA = "bg-warning text-dark"; 
-            tiempoSLA = "SLA: < 4 horas (Afectación significativa) [cite: 10]";
-        } else if (impacto === "Medio" && probabilidad === "Media") {
+            claseSLA = "badge-alta"; // Clase personalizada en tu CSS
+            tiempoSLA = "SLA: < 4 horas (Afectación significativa)";
+        } 
+        else if (impacto === "Medio" && probabilidad === "Media") {
             severidad = "Media";
             claseSLA = "bg-warning text-dark"; 
-            tiempoSLA = "SLA: < 24 horas (Impacto moderado) [cite: 10]";
-        } else if (impacto === "Bajo" && probabilidad === "Baja") {
+            tiempoSLA = "SLA: < 24 horas (Impacto moderado)";
+        } 
+        else if (impacto === "Bajo" && probabilidad === "Baja") {
             severidad = "Baja";
-            claseSLA = "bg-secondary";
-            tiempoSLA = "SLA: < 72 horas (Impacto menor) [cite: 10]";
-        } else {
-            // Fallback genérico para combinaciones no especificadas en el resumen [cite: 28]
-            severidad = "Media"; 
-            claseSLA = "bg-warning text-dark";
-            tiempoSLA = "SLA: < 24 horas (Revisión manual requerida) [cite: 10]";
+            claseSLA = "badge-baja";
+            tiempoSLA = "SLA: < 72 horas (Impacto menor)";
+        }
+        else {
+            // Para combinaciones que no están en la tabla
+            severidad = "Requiere Análisis";
+            claseSLA = "bg-dark text-white";
+            tiempoSLA = "Combinación fuera de matriz estándar. Consulte al CISO.";
         }
 
         // Actualizar la interfaz del Modal
@@ -145,8 +155,8 @@ document.addEventListener("DOMContentLoaded", () => {
         btnGuardarAlerta.addEventListener('click', () => {
             const severidadFinal = badgeSeveridad.innerText;
             
-            if (severidadFinal === "Pendiente") {
-                alert("Por favor, seleccione el Impacto y la Probabilidad para calcular la Severidad.");
+            if (severidadFinal === "Pendiente" || severidadFinal === "Requiere Análisis" || severidadFinal === "No Definida en Matriz") {
+                alert("Por favor, seleccione una combinación de Impacto y Probabilidad válida según la matriz del PGAC.");
                 return;
             }
             
