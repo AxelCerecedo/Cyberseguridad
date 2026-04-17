@@ -208,3 +208,69 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
+
+// ==========================================
+    // 6. LÓGICA DEL PANEL DE RECORDATORIOS (Campanita)
+    // ==========================================
+
+    const modalRecordatoriosElement = document.getElementById('modalRecordatorios');
+    
+    // Escuchar clics dentro del modal de recordatorios
+    if (modalRecordatoriosElement) {
+        modalRecordatoriosElement.addEventListener('click', (e) => {
+            
+            // Acción 1: Clic en "Atender ahora"
+            if (e.target.classList.contains('btn-outline-danger') || e.target.classList.contains('btn-outline-warning')) {
+                // Encontrar el elemento contenedor más cercano para sacar el ID
+                const itemLista = e.target.closest('.list-group-item');
+                // Sacar el ID de la etiqueta <h6> (ej. "CVE-2026-001")
+                const idAlerta = itemLista.querySelector('h6').innerText.split(' ')[0]; 
+
+                // 1. Ocultar el modal de recordatorios
+                const modalRecordatorios = bootstrap.Modal.getInstance(modalRecordatoriosElement);
+                modalRecordatorios.hide();
+
+                // 2. Inyectar el ID en el modal de Gestión para simular que entramos a esa alerta
+                document.getElementById('gestionarIdAlerta').innerText = idAlerta;
+                // Nota: En un sistema real aquí harías una consulta para traer los detalles de esa alerta
+                document.getElementById('gestionarTipo').innerText = "Recuperado del sistema";
+                document.getElementById('gestionarSeveridad').innerText = "En revisión";
+                document.getElementById('gestionarSeveridad').className = "badge bg-secondary";
+
+                // 3. Abrir el modal de Gestión de Evidencias
+                const modalGestion = new bootstrap.Modal(document.getElementById('modalGestionarAlerta'));
+                modalGestion.show();
+            }
+
+            // Acción 2: Clic en "Configurar Correos"
+            if (e.target.closest('.btn-outline-secondary') && e.target.innerText.includes('Configurar Correos')) {
+                // Ocultar recordatorios
+                const modalRecordatorios = bootstrap.Modal.getInstance(modalRecordatoriosElement);
+                modalRecordatorios.hide();
+
+                // Abrir modal de configuración
+                const modalCorreos = new bootstrap.Modal(document.getElementById('modalConfigurarCorreos'));
+                modalCorreos.show();
+            }
+        });
+    }
+
+    // Guardar la configuración de correos
+    const btnGuardarCorreos = document.getElementById('btnGuardarCorreos');
+    if (btnGuardarCorreos) {
+        btnGuardarCorreos.addEventListener('click', () => {
+            const correos = document.getElementById('correosSLA').value;
+            if(!correos) {
+                alert("Por favor ingrese al menos un correo válido.");
+                return;
+            }
+            alert(`Configuración guardada.\nLas notificaciones automáticas se enviarán a:\n${correos}`);
+            
+            // Cerrar el modal actual y regresar a los recordatorios
+            const modalCorreos = bootstrap.Modal.getInstance(document.getElementById('modalConfigurarCorreos'));
+            modalCorreos.hide();
+            
+            const modalRecordatorios = new bootstrap.Modal(document.getElementById('modalRecordatorios'));
+            modalRecordatorios.show();
+        });
+    }
