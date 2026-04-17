@@ -88,80 +88,48 @@ document.addEventListener("DOMContentLoaded", () => {
     // 4. LÓGICA DEL MODAL DE REGISTRO MANUAL (PGAC)
     // ==========================================
     
-    const selectImpacto = document.getElementById('alertaImpacto');
-    const selectProbabilidad = document.getElementById('alertaProbabilidad');
-    const badgeSeveridad = document.getElementById('resultadoSeveridad');
+    const selectSeveridad = document.getElementById('alertaSeveridad');
     const textSLA = document.getElementById('resultadoSLA');
     const btnGuardarAlerta = document.getElementById('btnGuardarAlerta');
 
-    // Función para calcular la matriz de severidad
-    function calcularSeveridad() {
-        const impacto = selectImpacto.value;
-        const probabilidad = selectProbabilidad.value;
+    // Mostrar el SLA correspondiente al seleccionar la severidad manualmente [cite: 10]
+    if (selectSeveridad) {
+        selectSeveridad.addEventListener('change', (e) => {
+            const severidad = e.target.value;
+            let sla = "Pendiente";
+            let colorClase = "text-muted";
 
-        if (!impacto || !probabilidad) {
-            badgeSeveridad.className = "badge bg-secondary fs-6";
-            badgeSeveridad.innerText = "Pendiente";
-            textSLA.innerText = "Seleccione Impacto y Probabilidad para calcular.";
-            return;
-        }
+            if (severidad === "Crítica") {
+                sla = "< 1 hora [cite: 10]";
+                colorClase = "text-danger";
+            } else if (severidad === "Alta") {
+                sla = "< 4 horas [cite: 10]";
+                colorClase = "text-warning"; 
+            } else if (severidad === "Media") {
+                sla = "< 24 horas [cite: 10]";
+                colorClase = "text-primary";
+            } else if (severidad === "Baja") {
+                sla = "< 72 horas [cite: 10]";
+                colorClase = "text-secondary";
+            }
 
-        let severidad = "No Definida en Matriz";
-        let claseSLA = "bg-secondary";
-        let tiempoSLA = "Revisar criterios de clasificación.";
-
-        // Matriz basada estrictamente en el PGAC
-        if (impacto === "Alto" && probabilidad === "Alta") {
-            severidad = "Crítica";
-            claseSLA = "bg-danger";
-            tiempoSLA = "SLA: < 1 hora (Impacto grave, interrupción total)";
-        } 
-        else if (impacto === "Alto" && probabilidad === "Media") {
-            severidad = "Alta";
-            claseSLA = "badge-alta"; // Clase personalizada en tu CSS
-            tiempoSLA = "SLA: < 4 horas (Afectación significativa)";
-        } 
-        else if (impacto === "Medio" && probabilidad === "Media") {
-            severidad = "Media";
-            claseSLA = "bg-warning text-dark"; 
-            tiempoSLA = "SLA: < 24 horas (Impacto moderado)";
-        } 
-        else if (impacto === "Bajo" && probabilidad === "Baja") {
-            severidad = "Baja";
-            claseSLA = "badge-baja";
-            tiempoSLA = "SLA: < 72 horas (Impacto menor)";
-        }
-        else {
-            // Para combinaciones que no están en la tabla
-            severidad = "Requiere Análisis";
-            claseSLA = "bg-dark text-white";
-            tiempoSLA = "Combinación fuera de matriz estándar. Consulte al CISO.";
-        }
-
-        // Actualizar la interfaz del Modal
-        badgeSeveridad.className = `badge fs-6 ${claseSLA}`;
-        badgeSeveridad.innerText = severidad;
-        textSLA.innerText = tiempoSLA;
-    }
-
-    // Escuchar cambios en los selectores de Impacto y Probabilidad
-    if (selectImpacto && selectProbabilidad) {
-        selectImpacto.addEventListener('change', calcularSeveridad);
-        selectProbabilidad.addEventListener('change', calcularSeveridad);
+            textSLA.innerText = sla;
+            textSLA.className = `${colorClase} fw-bold`;
+        });
     }
 
     // Simular el guardado de la nueva alerta
     if (btnGuardarAlerta) {
         btnGuardarAlerta.addEventListener('click', () => {
-            const severidadFinal = badgeSeveridad.innerText;
+            const severidadFinal = selectSeveridad.value;
             
-            if (severidadFinal === "Pendiente" || severidadFinal === "Requiere Análisis" || severidadFinal === "No Definida en Matriz") {
-                alert("Por favor, seleccione una combinación de Impacto y Probabilidad válida según la matriz del PGAC.");
+            if (!severidadFinal) {
+                alert("Por favor, seleccione el Nivel de Severidad de la alerta.");
                 return;
             }
             
             // Aquí en un futuro enviarías los datos por fetch/AJAX a tu backend Node.js
-            alert(`¡Alerta registrada con éxito en el sistema!\n\nSeveridad calculada: ${severidadFinal}\nTiempo de respuesta esperado: ${textSLA.innerText}`);
+            alert(`¡Alerta registrada con éxito en el sistema!\n\nSeveridad seleccionada: ${severidadFinal}\nTiempo de respuesta SLA: ${textSLA.innerText}`);
             
             // Cerrar el modal y reiniciar el formulario
             const modalElement = document.getElementById('modalRegistroAlerta');
@@ -169,9 +137,8 @@ document.addEventListener("DOMContentLoaded", () => {
             modalInstance.hide();
             
             document.getElementById('formNuevaAlerta').reset();
-            badgeSeveridad.className = "badge bg-secondary fs-6";
-            badgeSeveridad.innerText = "Pendiente";
-            textSLA.innerText = "Seleccione Impacto y Probabilidad para calcular el SLA.";
+            textSLA.innerText = "Pendiente";
+            textSLA.className = "text-danger fw-bold";
         });
     }
 
