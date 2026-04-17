@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-  <link href="cyberseguridad.css" rel="stylesheet" />
+  <link href="css/cyberseguridad.css" rel="stylesheet" />
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -35,7 +35,6 @@
           <span class="visually-hidden">alertas por vencer</span>
         </span>
       </button>
-
       <button class="btn btn-outline-danger btn-lg" onclick="cerrarSesion()">Cerrar sesión</button>
     </div>
   </header>
@@ -355,7 +354,7 @@
               <p class="mb-1 text-muted small">Malware detectado en Servidor.</p>
               <div class="d-flex justify-content-between align-items-center mt-2">
                 <small>Asignado a: <strong>Equipo TI</strong></small>
-                <button class="btn btn-sm btn-outline-danger">Atender ahora</button>
+                <button class="btn btn-sm btn-outline-danger btn-atender-ahora">Atender ahora</button>
               </div>
             </div>
 
@@ -367,14 +366,14 @@
               <p class="mb-1 text-muted small">Intrusión detectada en Red.</p>
               <div class="d-flex justify-content-between align-items-center mt-2">
                 <small>Asignado a: <strong>SOC</strong></small>
-                <button class="btn btn-sm btn-outline-warning text-dark">Atender ahora</button>
+                <button class="btn btn-sm btn-outline-warning text-dark btn-atender-ahora">Atender ahora</button>
               </div>
             </div>
           </div>
 
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary me-auto btn-sm">
+          <button type="button" class="btn btn-outline-secondary me-auto btn-sm btn-config-correos">
             <i class="bi bi-gear-fill"></i> Configurar Correos
           </button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -423,6 +422,6 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="cyberseguridad.js"></script>
+  <script src="js/cyberseguridad.js"></script>
 </body>
 </html>
