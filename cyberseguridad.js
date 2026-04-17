@@ -1,6 +1,30 @@
 document.addEventListener("DOMContentLoaded", () => {
     
     // ==========================================
+    // SISTEMA DE ALERTAS ELEGANTES (TOAST)
+    // ==========================================
+    function mostrarNotificacion(mensaje, tipo = 'success') {
+        const toastElement = document.getElementById('liveToast');
+        const toastBody = document.getElementById('toastBody');
+
+        // Limpiar colores previos
+        toastElement.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-primary');
+
+        // Asignar color según el tipo
+        if (tipo === 'success') toastElement.classList.add('bg-success');
+        else if (tipo === 'error') toastElement.classList.add('bg-danger');
+        else if (tipo === 'warning') toastElement.classList.add('bg-warning', 'text-dark');
+        else toastElement.classList.add('bg-primary');
+
+        // Insertar el mensaje (reemplazando \n por <br> para los saltos de línea)
+        toastBody.innerHTML = mensaje.replace(/\n/g, '<br>');
+
+        // Mostrar
+        const toast = new bootstrap.Toast(toastElement, { delay: 4500 });
+        toast.show();
+    }
+
+    // ==========================================
     // 1. CARGA DE KPIs (Datos Simulados)
     // ==========================================
     document.getElementById("kpi-criticas").innerText = "3";
@@ -11,7 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // 2. GRÁFICOS (Chart.js)
     // ==========================================
-    
     const ctxThreat = document.getElementById('threatTypeChart').getContext('2d');
     new Chart(ctxThreat, {
         type: 'doughnut',
@@ -22,13 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 backgroundColor: ['#dc3545', '#fd7e14', '#0d6efd', '#6f42c1', '#6c757d']
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'right' }
-            }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
     });
 
     const ctxAssets = document.getElementById('assetsChart').getContext('2d');
@@ -42,11 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 backgroundColor: '#7c1225'
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
     });
 
     // ==========================================
@@ -84,7 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // 4. LÓGICA DEL MODAL DE REGISTRO MANUAL
     // ==========================================
-    
     const selectSeveridad = document.getElementById('alertaSeveridad');
     const textSLA = document.getElementById('resultadoSLA');
     const btnGuardarAlerta = document.getElementById('btnGuardarAlerta');
@@ -95,15 +107,10 @@ document.addEventListener("DOMContentLoaded", () => {
             let sla = "Pendiente";
             let colorClase = "text-muted";
 
-            if (severidad === "Crítica") {
-                sla = "< 1 hora"; colorClase = "text-danger";
-            } else if (severidad === "Alta") {
-                sla = "< 4 horas"; colorClase = "text-warning"; 
-            } else if (severidad === "Media") {
-                sla = "< 24 horas"; colorClase = "text-primary";
-            } else if (severidad === "Baja") {
-                sla = "< 72 horas"; colorClase = "text-secondary";
-            }
+            if (severidad === "Crítica") { sla = "< 1 hora"; colorClase = "text-danger"; } 
+            else if (severidad === "Alta") { sla = "< 4 horas"; colorClase = "text-warning"; } 
+            else if (severidad === "Media") { sla = "< 24 horas"; colorClase = "text-primary"; } 
+            else if (severidad === "Baja") { sla = "< 72 horas"; colorClase = "text-secondary"; }
 
             textSLA.innerText = sla;
             textSLA.className = `${colorClase} fw-bold`;
@@ -114,10 +121,11 @@ document.addEventListener("DOMContentLoaded", () => {
         btnGuardarAlerta.addEventListener('click', () => {
             const severidadFinal = selectSeveridad.value;
             if (!severidadFinal) {
-                alert("Por favor, seleccione el Nivel de Severidad de la alerta.");
+                mostrarNotificacion("Por favor, seleccione el Nivel de Severidad de la alerta.", "warning");
                 return;
             }
-            alert(`¡Alerta registrada con éxito en el sistema!\n\nSeveridad seleccionada: ${severidadFinal}\nTiempo de respuesta SLA: ${textSLA.innerText}`);
+            
+            mostrarNotificacion(`¡Alerta registrada con éxito!\nSeveridad: ${severidadFinal}\nSLA: ${textSLA.innerText}`, "success");
             
             const modalElement = document.getElementById('modalRegistroAlerta');
             const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
@@ -132,7 +140,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // 5. LÓGICA DEL MODAL DE GESTIÓN (Evidencias y Estado de SLA)
     // ==========================================
-
     tbody.addEventListener('click', (e) => {
         if (e.target.classList.contains('btn-gestionar')) {
             const fila = e.target.closest('tr');
@@ -171,17 +178,40 @@ document.addEventListener("DOMContentLoaded", () => {
             const archivos = document.getElementById('gestionarEvidencias').files.length;
             const nuevoEstado = document.getElementById('gestionarEstado').value;
             
-            let mensaje = `¡Alerta ${idAlerta} actualizada a estado: ${nuevoEstado}!`;
-            if (archivos > 0) { mensaje += `\nSe han adjuntado ${archivos} archivo(s) de evidencia.`; }
+            let mensaje = `¡Alerta ${idAlerta} actualizada a: ${nuevoEstado}!`;
+            if (archivos > 0) { mensaje += `\n📁 ${archivos} archivo(s) de evidencia adjuntos.`; }
             
             // Lógica de Congelamiento de Reloj (SLA)
             if (nuevoEstado === "Cierre") {
-                mensaje += `\n\n✅ RELOJ DETENIDO: El incidente ha sido cerrado exitosamente. El MTTR ha sido calculado.`;
-            } else {
-                mensaje += `\n\n⏱️ El reloj del SLA sigue corriendo.`;
-            }
+                mensaje += `\n✅ RELOJ DETENIDO: El incidente ha sido cerrado exitosamente.`;
+                mostrarNotificacion(mensaje, "success");
+                
+                // --- NUEVA LÓGICA: BORRAR DE NOTIFICACIONES ---
+                const listaNotificaciones = document.querySelector('#modalRecordatorios .list-group');
+                const items = listaNotificaciones.querySelectorAll('.list-group-item');
+                
+                items.forEach(item => {
+                    if (item.innerText.includes(idAlerta)) {
+                        item.remove(); // Borra la alerta de la lista
+                    }
+                });
 
-            alert(mensaje);
+                // Actualizar el número en el globito rojo (Campanita)
+                const badgeNotif = document.querySelector('.bi-bell-fill').nextElementSibling;
+                const itemsRestantes = document.querySelectorAll('#modalRecordatorios .list-group-item').length;
+                
+                if (itemsRestantes > 0) {
+                    // Actualiza el número de texto sin borrar la clase visually-hidden
+                    badgeNotif.childNodes[0].nodeValue = itemsRestantes + " ";
+                } else {
+                    badgeNotif.style.display = 'none'; // Esconde el globito si llega a 0
+                    listaNotificaciones.innerHTML = '<p class="text-center text-muted my-4">No hay recordatorios pendientes de SLA.</p>';
+                }
+
+            } else {
+                mensaje += `\n⏱️ El reloj del SLA sigue corriendo.`;
+                mostrarNotificacion(mensaje, "primary");
+            }
             
             const modalElement = document.getElementById('modalGestionarAlerta');
             const modalInstance = bootstrap.Modal.getInstance(modalElement);
@@ -213,7 +243,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // 6. LÓGICA DEL PANEL DE RECORDATORIOS (Campanita)
     // ==========================================
-
     const modalRecordatoriosElement = document.getElementById('modalRecordatorios');
     
     if (modalRecordatoriosElement) {
@@ -255,10 +284,11 @@ document.addEventListener("DOMContentLoaded", () => {
         btnGuardarCorreos.addEventListener('click', () => {
             const correos = document.getElementById('correosSLA').value;
             if(!correos) {
-                alert("Por favor ingrese al menos un correo válido.");
+                mostrarNotificacion("Por favor ingrese al menos un correo válido.", "warning");
                 return;
             }
-            alert(`Configuración guardada.\nLas notificaciones automáticas se enviarán a:\n${correos}`);
+            
+            mostrarNotificacion(`Configuración guardada.\nLas notificaciones se enviarán a:\n${correos}`, "success");
             
             const modalCorreos = bootstrap.Modal.getInstance(document.getElementById('modalConfigurarCorreos'));
             modalCorreos.hide();
