@@ -20,6 +20,16 @@
 
 <body>
 
+  <div class="toast-container position-fixed top-0 end-0 p-4" style="z-index: 1055;">
+    <div id="liveToast" class="toast align-items-center text-white border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body fs-6" id="toastBody">
+          </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
   <header class="header-container d-flex align-items-center justify-content-between px-3 mb-4">
     <img src="Imagenes/Logos/logo.png" alt="Logo" class="logo" />
     <div class="text-center flex-grow-1 encabezado mx-3">
