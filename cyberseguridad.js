@@ -183,6 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Simular el guardado de la gestión de alerta
+    // Simular el guardado de la gestión de alerta
     const btnActualizarAlerta = document.getElementById('btnActualizarAlerta');
     if (btnActualizarAlerta) {
         btnActualizarAlerta.addEventListener('click', () => {
@@ -190,24 +191,54 @@ document.addEventListener("DOMContentLoaded", () => {
             const archivos = document.getElementById('gestionarEvidencias').files.length;
             const nuevoEstado = document.getElementById('gestionarEstado').value;
             
+            // 1. Mensaje de confirmación
             let mensaje = `¡Alerta ${idAlerta} actualizada a estado: ${nuevoEstado}!`;
             if (archivos > 0) {
                 mensaje += `\nSe han adjuntado ${archivos} archivo(s) de evidencia.`;
             }
+            
+            // Lógica de Negocio (SLA)
+            if (nuevoEstado === "Cierre") {
+                mensaje += `\n\n✅ RELOJ DETENIDO: El incidente ha sido cerrado exitosamente. El MTTR ha sido calculado.`;
+            } else {
+                mensaje += `\n\n⏱️ El reloj del SLA sigue corriendo.`;
+            }
 
             alert(mensaje);
             
-            // Cerrar el modal
+            // 2. Cerrar el modal
             const modalElement = document.getElementById('modalGestionarAlerta');
             const modalInstance = bootstrap.Modal.getInstance(modalElement);
             modalInstance.hide();
             
+            // 3. ACTUALIZAR LA TABLA VISUALMENTE
+            // Buscamos la fila en la tabla que tenga este ID para actualizarla en vivo
+            const filas = document.querySelectorAll('#alertsTableBody tr');
+            filas.forEach(fila => {
+                if (fila.cells[0].innerText === idAlerta) {
+                    // Actualizamos el texto del badge de estado
+                    const badgeEstado = fila.cells[4].querySelector('.badge');
+                    badgeEstado.innerText = nuevoEstado;
+                    
+                    // Si es cierre, lo pintamos de gris o éxito para indicar que terminó
+                    if (nuevoEstado === "Cierre") {
+                        badgeEstado.className = "badge rounded-pill bg-secondary text-white";
+                        // Deshabilitamos el botón de gestionar porque ya se cerró
+                        const btn = fila.cells[5].querySelector('button');
+                        btn.innerText = "Finalizado";
+                        btn.className = "btn btn-sm btn-outline-secondary disabled";
+                        btn.disabled = true;
+                    } else {
+                        // Si es otro estado activo, mantenemos los colores de alerta
+                        badgeEstado.className = "badge rounded-pill status-contencion";
+                    }
+                }
+            });
+
             // Limpiar formulario
             document.getElementById('formGestionarAlerta').reset();
         });
     }
-
-});
 
 // ==========================================
     // 6. LÓGICA DEL PANEL DE RECORDATORIOS (Campanita)
