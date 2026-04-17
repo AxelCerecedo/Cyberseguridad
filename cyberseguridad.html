@@ -238,32 +238,23 @@
             </div>
 
             <hr class="my-4">
-            <h6 class="fw-bold text-secondary mb-3">Cálculo de Severidad y SLA (Impacto x Probabilidad)</h6>
+            <h6 class="fw-bold text-secondary mb-3">Clasificación de Severidad</h6>
 
             <div class="row mb-3">
-              <div class="col-md-6">
-                <label class="form-label fw-bold">Impacto Estimado</label>
-                <select class="form-select" id="alertaImpacto" required>
-                  <option value="" selected disabled>Seleccione...</option>
-                  <option value="Alto">Alto</option>
-                  <option value="Medio">Medio</option>
-                  <option value="Bajo">Bajo</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label fw-bold">Probabilidad</label>
-                <select class="form-select" id="alertaProbabilidad" required>
-                  <option value="" selected disabled>Seleccione...</option>
-                  <option value="Alta">Alta</option>
-                  <option value="Media">Media</option>
-                  <option value="Baja">Baja</option>
+              <div class="col-md-12">
+                <label class="form-label fw-bold">Nivel de Severidad</label>
+                <select class="form-select" id="alertaSeveridad" required>
+                  <option value="" selected disabled>Seleccione la severidad...</option>
+                  <option value="Crítica">Crítica (Impacto grave, interrupción total)</option>
+                  <option value="Alta">Alta (Afectación significativa)</option>
+                  <option value="Media">Media (Impacto moderado)</option>
+                  <option value="Baja">Baja (Impacto menor)</option>
                 </select>
               </div>
             </div>
 
             <div class="alert alert-light border text-center mt-3" role="alert">
-              <h6 class="mb-1">Severidad Resultante: <span id="resultadoSeveridad" class="badge bg-secondary fs-6">Pendiente</span></h6>
-              <small id="resultadoSLA" class="text-muted">Seleccione Impacto y Probabilidad para calcular la matriz.</small>
+              <h6 class="mb-1">Tiempo de Respuesta (SLA): <span id="resultadoSLA" class="text-danger fw-bold">Pendiente</span></h6>
             </div>
           </form>
         </div>
