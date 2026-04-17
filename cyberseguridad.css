@@ -1,0 +1,210 @@
+/* =========================================
+   Base y Estructura Principal
+========================================= */
+body {
+  padding: 20px;
+  background-color: #f4f4f4;
+  font-family: 'Segoe UI', sans-serif;
+  color: #000;
+}
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.container-fluid {
+  max-width: 100%;
+  padding: 20px;
+}
+
+/* =========================================
+   Encabezado Institucional
+========================================= */
+.header-container {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.logo {
+  max-height: 60px;
+  width: auto;
+}
+
+.encabezado {
+  background-color: #7c1225;
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  padding: 0.75rem 1rem;
+  flex-grow: 1;
+}
+
+.encabezado > div {
+  width: 100%;
+  text-align: center;
+}
+
+.titulo-principal {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.subtitulo {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #f0dede;
+}
+
+/* =========================================
+   Barra de Navegación
+========================================= */
+.navbar-roja {
+  background-color: #7c1225;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.navbar-roja .navbar-brand {
+  color: white;
+  font-weight: bold;
+}
+
+.navbar-roja .nav-link {
+  color: #f0dede;
+  transition: color 0.3s ease;
+  padding: 15px 10px;
+}
+
+.navbar-roja .nav-link:hover,
+.navbar-roja .nav-link.active {
+  color: white;
+}
+
+.separator {
+  user-select: none;
+  opacity: 0.5;
+}
+
+/* =========================================
+   Dashboard de Alertas (Nuevos Estilos)
+========================================= */
+
+/* Tarjeta de introducción y filtros */
+.intro-card {
+  background: #ffffff;
+  border-radius: 8px;
+  border-top: 6px solid #7c1225; /* Línea institucional */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #7c1225;
+}
+
+.dashboard-subtitle {
+  color: #555;
+  font-size: 1rem;
+}
+
+/* Tarjetas de Indicadores (KPIs) */
+.alert-card {
+  border-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+}
+
+.alert-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2) !important;
+}
+
+/* Forzar colores en tarjetas KPI para que destaquen */
+.bg-danger { background-color: #dc3545 !important; }
+.bg-warning { background-color: #ffc107 !important; color: #212529 !important;}
+.bg-primary { background-color: #0d6efd !important; }
+.bg-success { background-color: #198754 !important; }
+
+/* =========================================
+   Badges de Severidad y Estado
+========================================= */
+/* Severidad (Fondo sólido) */
+.badge-critica { background-color: #dc3545; color: white; padding: 0.4em 0.6em; }
+.badge-alta    { background-color: #fd7e14; color: white; padding: 0.4em 0.6em; }
+.badge-media   { background-color: #ffc107; color: #212529; padding: 0.4em 0.6em; }
+.badge-baja    { background-color: #6c757d; color: white; padding: 0.4em 0.6em; }
+
+/* Estado (Borde y texto transparente) */
+.status-analisis   { border: 1px solid #0d6efd; color: #0d6efd; background: transparent; padding: 0.4em 0.8em; }
+.status-contencion { border: 1px solid #198754; color: #198754; background: transparent; padding: 0.4em 0.8em; }
+.status-cierre     { border: 1px solid #6c757d; color: #6c757d; background: transparent; padding: 0.4em 0.8em; }
+
+/* =========================================
+   Tablas y Gráficos
+========================================= */
+.table th {
+  background-color: #7c1225;
+  color: #ffffff;
+  font-weight: 600;
+  text-align: center;
+}
+
+.table td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f8e9eb; /* Un tono rojizo muy claro al pasar el mouse */
+}
+
+/* =========================================
+   Botones Generales
+========================================= */
+button.btn-primary {
+  background-color: #7c1225;
+  border-color: #7c1225;
+}
+
+button.btn-primary:hover {
+  background-color: #5e0e1d;
+  border-color: #5e0e1d;
+}
+
+button.btn-outline-primary {
+  color: #7c1225;
+  border-color: #7c1225;
+}
+
+button.btn-outline-primary:hover {
+  background-color: #7c1225;
+  color: white;
+}
+
+/* =========================================
+   Footer Institucional
+========================================= */
+.main-footer {
+  text-align: center;
+  background-color: #5e0e1d;
+  color: #fff;
+  padding: 25px 0;
+  font-size: 16px; /* Ajustado ligeramente para que no se vea tan gigante */
+  width: 100vw;
+  flex-shrink: 0;
+  margin-top: 30px;
+  margin-left: -20px;
+  position: relative;
+}
+
+.footer-logo {
+  height: 90px; 
+  margin-bottom: 10px;
+}
